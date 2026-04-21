@@ -1,19 +1,13 @@
-/* ===== Переменные темы ===== */
 :root {
-    --header-h: 44px;
     --accent: #39FF14;
     --header-bg-start: #0a5c2e;
     --header-bg-end: #0d7035;
 
-    /* Переменные темы Telegram с фолбэками */
     --bg: var(--tg-theme-bg-color, #0f0f0f);
     --text: var(--tg-theme-text-color, #ffffff);
     --muted: var(--tg-theme-hint-color, #8a8a8a);
-    --btn-bg: var(--tg-theme-button-color, var(--header-bg-end));
-    --btn-text: var(--tg-theme-button-text-color, #ffffff);
 }
 
-/* ===== Reset ===== */
 * {
     margin: 0;
     padding: 0;
@@ -24,7 +18,6 @@
 html, body {
     height: 100%;
     width: 100%;
-    overflow: hidden;
     background: var(--bg);
     color: var(--text);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
@@ -32,114 +25,18 @@ html, body {
     font-size: 15px;
     line-height: 1.4;
     -webkit-font-smoothing: antialiased;
-}
-
-body {
-    display: flex;
-    flex-direction: column;
-}
-
-/* ===== Header ===== */
-.app-header {
-    flex: 0 0 var(--header-h);
-    height: var(--header-h);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 12px;
-    background: linear-gradient(135deg, var(--header-bg-start) 0%, var(--header-bg-end) 100%);
-    border-bottom: 2px solid var(--accent);
-    box-shadow: 0 2px 10px rgba(57, 255, 20, 0.15);
-    position: relative;
-    z-index: 10;
-    user-select: none;
-}
-
-.header-logo {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    min-width: 0;
-}
-
-.logo-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--accent);
-    box-shadow: 0 0 8px var(--accent), 0 0 2px #fff;
-    animation: pulse 2s ease-in-out infinite;
-    flex-shrink: 0;
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50%      { opacity: 0.55; transform: scale(0.82); }
-}
-
-.logo-title {
-    color: #fff;
-    font-size: 15px;
-    font-weight: 600;
-    letter-spacing: 0.3px;
-    white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
 }
 
-.close-btn {
-    width: 32px;
-    height: 32px;
-    border: none;
-    background: rgba(255, 255, 255, 0.12);
-    color: #fff;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s ease, transform 0.15s ease;
-    flex-shrink: 0;
-}
-
-.close-btn:hover  { background: rgba(255, 255, 255, 0.22); }
-.close-btn:active { background: rgba(255, 255, 255, 0.32); transform: scale(0.9); }
-
-/* ===== Main ===== */
-.app-main {
-    flex: 1 1 auto;
-    position: relative;
-    width: 100%;
-    height: 100vh;
-    min-height: 0;
-}
-
-.app-frame {
-    width: 100%;
-    height: 100%;
-    border: 0;
-    display: block;
-    background: var(--bg);
-}
-
-/* ===== Loader ===== */
-.loader-wrap {
-    position: absolute;
+.redirect-wrap {
+    position: fixed;
     inset: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 16px;
-    background: var(--bg);
-    z-index: 5;
-    transition: opacity 0.3s ease;
-}
-
-.loader-wrap.hidden {
-    opacity: 0;
-    pointer-events: none;
+    padding: 24px;
 }
 
 .spinner {
@@ -153,54 +50,28 @@ body {
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
-.loader-text {
+.redirect-text {
     color: var(--muted);
     font-size: 14px;
     letter-spacing: 0.3px;
 }
 
-/* ===== Fallback ===== */
-.fallback {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-    text-align: center;
-    background: var(--bg);
-    gap: 12px;
-    z-index: 6;
-}
-
-/* HTML-атрибут hidden должен побеждать правило .fallback { display: flex } */
-[hidden] { display: none !important; }
-
-.fallback-icon  { font-size: 48px; line-height: 1; }
-.fallback-title { font-size: 20px; font-weight: 600; }
-.fallback-text  { color: var(--muted); font-size: 14px; max-width: 280px; }
-
-.fallback-btn {
+.redirect-btn {
     margin-top: 12px;
-    padding: 12px 24px;
+    padding: 12px 28px;
     border: none;
     border-radius: 10px;
     background: linear-gradient(135deg, var(--header-bg-start), var(--header-bg-end));
     color: #fff;
     font-size: 15px;
     font-weight: 600;
+    text-decoration: none;
     cursor: pointer;
     transition: transform 0.15s ease, box-shadow 0.2s ease;
     box-shadow: 0 2px 12px rgba(57, 255, 20, 0.22);
 }
 
-.fallback-btn:hover  { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(57, 255, 20, 0.32); }
-.fallback-btn:active { transform: translateY(0);    box-shadow: 0 2px 8px  rgba(57, 255, 20, 0.22); }
+.redirect-btn:hover  { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(57, 255, 20, 0.32); }
+.redirect-btn:active { transform: translateY(0);    box-shadow: 0 2px 8px  rgba(57, 255, 20, 0.22); }
 
-/* ===== Адаптивность: мелкие экраны ===== */
-@media (max-width: 360px) {
-    .logo-title   { font-size: 13px; }
-    .close-btn    { width: 30px; height: 30px; }
-    .fallback-title { font-size: 18px; }
-}
+[hidden] { display: none !important; }
