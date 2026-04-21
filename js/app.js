@@ -18,6 +18,13 @@
     if (tg) {
         try { tg.ready(); } catch (e) {}
         try { tg.expand(); } catch (e) {}
+        // Bot API 8.0+: полноэкранный режим (ПК и мобильные).
+        // Если клиент не поддерживает — вызов молча проигнорируется.
+        try {
+            if (typeof tg.requestFullscreen === 'function') {
+                tg.requestFullscreen();
+            }
+        } catch (e) {}
     }
 
     // ---- 2. Построение целевого URL ----
