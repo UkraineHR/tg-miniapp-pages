@@ -15,35 +15,64 @@
     var cfg = window.APP_CONFIG || {};
 
     // ---- 1. Telegram WebApp SDK ----
+    // Вспомогательная функция для визуального дебага на странице
+    var _debugStatus = '';
+    function showDebug(line) {
+        _debugStatus += line + '\n';
+        var el = document.getElementById('debugInfo');
+        if (!el) {
+            el = document.createElement('div');
+            el.id = 'debugInfo';
+            el.style.cssText = 'position:fixed;top:8px;left:8px;right:8px;padding:8px;' +
+                'background:rgba(0,0,0,.75);color:#39FF14;font:11px monospace;' +
+                'z-index:9999;border-radius:6px;white-space:pre-wrap;max-height:40vh;overflow:auto';
+            document.body && document.body.appendChild(el);
+        }
+        el.textContent = _debugStatus;
+    }
+    // Включаем визуальный дебаг при ?debug=1 в URL
+    var DEBUG_MODE = /[?&]debug=1\b/.test(window.location.search);
+
     if (tg) {
         try { tg.ready(); } catch (e) {}
         try { tg.expand(); } catch (e) {}
 
-        // Слушаем события fullscreen для диагностики
+        if (DEBUG_MODE) {
+            showDebug('tg.version = ' + tg.version);
+            showDebug('tg.platform = ' + tg.platform);
+            showDebug('requestFullscreen exists = ' + (typeof tg.requestFullscreen === 'function'));
+            showDebug('isFullscreen initial = ' + tg.isFullscreen);
+            showDebug('isExpanded = ' + tg.isExpanded);
+        }
+
+        // Слушаем события fullscreen
         try {
             tg.onEvent && tg.onEvent('fullscreenFailed', function (data) {
                 console.warn('[FS] failed:', JSON.stringify(data));
+                if (DEBUG_MODE) showDebug('FS FAILED: ' + JSON.stringify(data));
             });
             tg.onEvent && tg.onEvent('fullscreenChanged', function () {
                 console.log('[FS] changed: isFullscreen=', tg.isFullscreen);
+                if (DEBUG_MODE) showDebug('FS CHANGED: isFullscreen=' + tg.isFullscreen);
             });
         } catch (e) {
             console.warn('[FS] onEvent error:', e);
         }
 
         // Bot API 8.0+: полноэкранный режим.
-        // Вызываем через setTimeout, чтобы Telegram успел полностью инициализировать
-        // WebApp state и принял запрос — без этого на некоторых клиентах игнорится.
         setTimeout(function () {
             try {
                 if (typeof tg.requestFullscreen === 'function') {
                     console.log('[FS] requesting, version=', tg.version);
+                    if (DEBUG_MODE) showDebug('Calling requestFullscreen()...');
                     tg.requestFullscreen();
                 } else {
                     console.warn('[FS] requestFullscreen not available (old client)');
+                    if (DEBUG_MODE) showDebug('requestFullscreen NOT AVAILABLE');
                 }
             } catch (e) {
                 console.error('[FS] call error:', e);
+                if (DEBUG_MODE) showDebug('ERROR calling requestFullscreen: ' + e);
             }
         }, 100);
     }
@@ -140,6 +169,11 @@
 
     Promise.all([minDelay, trackOpen()])
         .then(function () {
+            // В debug-режиме НЕ редиректим, чтобы видеть статус fullscreen
+            if (DEBUG_MODE) {
+                showDebug('REDIRECT SKIPPED (debug mode). Would go to: ' + targetUrl);
+                return;
+            }
             console.log('[app v3] Promises resolved, redirecting');
             redirect();
         })
