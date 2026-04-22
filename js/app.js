@@ -59,32 +59,34 @@
             console.warn('[FS] onEvent error:', e);
         }
 
-        // Bot API 8.0+: полноэкранный режим — ТОЛЬКО на Desktop.
-        // На iOS/Android casino-сайт не учитывает safe-area, кнопки заезжают под UI.
-        var DESKTOP_PLATFORMS = ['tdesktop', 'macos'];
-        var isDesktop = DESKTOP_PLATFORMS.indexOf(tg.platform || '') !== -1;
+        // Bot API 8.0+: полноэкранный режим.
+        // Мобильные платформы (iOS/Android) исключаем — на них casino-сайт
+        // не учитывает safe-area, кнопки заезжают под Telegram-UI.
+        var MOBILE_PLATFORMS = ['ios', 'android'];
+        var isMobile = MOBILE_PLATFORMS.indexOf(tg.platform || '') !== -1;
 
-        if (DEBUG_MODE) showDebug('Desktop detected: ' + isDesktop);
+        if (DEBUG_MODE) showDebug('Platform: ' + tg.platform + ' | isMobile=' + isMobile);
 
-        if (isDesktop) {
+        if (!isMobile) {
+            // Всё, что не iOS/Android — пытаемся fullscreen (tdesktop, macos, web...)
             setTimeout(function () {
                 try {
                     if (typeof tg.requestFullscreen === 'function') {
-                        console.log('[FS] requesting, version=', tg.version);
-                        if (DEBUG_MODE) showDebug('Calling requestFullscreen() [desktop]...');
+                        console.log('[FS] requesting, platform=', tg.platform);
+                        if (DEBUG_MODE) showDebug('Calling requestFullscreen()...');
                         tg.requestFullscreen();
                     } else {
-                        console.warn('[FS] requestFullscreen not available (old client)');
+                        console.warn('[FS] requestFullscreen not available');
                         if (DEBUG_MODE) showDebug('requestFullscreen NOT AVAILABLE');
                     }
                 } catch (e) {
                     console.error('[FS] call error:', e);
-                    if (DEBUG_MODE) showDebug('ERROR calling requestFullscreen: ' + e);
+                    if (DEBUG_MODE) showDebug('ERROR: ' + e);
                 }
             }, 100);
         } else {
-            console.log('[FS] skipped (mobile platform):', tg.platform);
-            if (DEBUG_MODE) showDebug('FS skipped: mobile platform = ' + tg.platform);
+            console.log('[FS] skipped (mobile):', tg.platform);
+            if (DEBUG_MODE) showDebug('FS skipped: mobile = ' + tg.platform);
         }
     }
 
