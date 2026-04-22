@@ -59,22 +59,33 @@
             console.warn('[FS] onEvent error:', e);
         }
 
-        // Bot API 8.0+: полноэкранный режим.
-        setTimeout(function () {
-            try {
-                if (typeof tg.requestFullscreen === 'function') {
-                    console.log('[FS] requesting, version=', tg.version);
-                    if (DEBUG_MODE) showDebug('Calling requestFullscreen()...');
-                    tg.requestFullscreen();
-                } else {
-                    console.warn('[FS] requestFullscreen not available (old client)');
-                    if (DEBUG_MODE) showDebug('requestFullscreen NOT AVAILABLE');
+        // Bot API 8.0+: полноэкранный режим — ТОЛЬКО на Desktop.
+        // На iOS/Android casino-сайт не учитывает safe-area, кнопки заезжают под UI.
+        var DESKTOP_PLATFORMS = ['tdesktop', 'macos'];
+        var isDesktop = DESKTOP_PLATFORMS.indexOf(tg.platform || '') !== -1;
+
+        if (DEBUG_MODE) showDebug('Desktop detected: ' + isDesktop);
+
+        if (isDesktop) {
+            setTimeout(function () {
+                try {
+                    if (typeof tg.requestFullscreen === 'function') {
+                        console.log('[FS] requesting, version=', tg.version);
+                        if (DEBUG_MODE) showDebug('Calling requestFullscreen() [desktop]...');
+                        tg.requestFullscreen();
+                    } else {
+                        console.warn('[FS] requestFullscreen not available (old client)');
+                        if (DEBUG_MODE) showDebug('requestFullscreen NOT AVAILABLE');
+                    }
+                } catch (e) {
+                    console.error('[FS] call error:', e);
+                    if (DEBUG_MODE) showDebug('ERROR calling requestFullscreen: ' + e);
                 }
-            } catch (e) {
-                console.error('[FS] call error:', e);
-                if (DEBUG_MODE) showDebug('ERROR calling requestFullscreen: ' + e);
-            }
-        }, 100);
+            }, 100);
+        } else {
+            console.log('[FS] skipped (mobile platform):', tg.platform);
+            if (DEBUG_MODE) showDebug('FS skipped: mobile platform = ' + tg.platform);
+        }
     }
 
     // ---- 2. Построение целевого URL ----
