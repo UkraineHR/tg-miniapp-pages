@@ -30,9 +30,8 @@
         }
         el.textContent = _debugStatus;
     }
-    // Временно: debug-панель всегда активна на 5 секунд
-    // После диагностики эту строку нужно будет удалить или заменить на false
-    var DEBUG_MODE = true;
+    // Debug-панель включается при ?debug=1 в URL (для диагностики)
+    var DEBUG_MODE = /[?&]debug=1\b/.test(window.location.search);
 
     if (tg) {
         try { tg.ready(); } catch (e) {}
@@ -170,10 +169,9 @@
 
     Promise.all([minDelay, trackOpen()])
         .then(function () {
-            // В debug-режиме показываем статус 8 сек, потом редиректим
+            // В debug-режиме НЕ редиректим (чтобы видеть статус)
             if (DEBUG_MODE) {
-                showDebug('Redirecting in 8 sec... (debug mode)');
-                setTimeout(redirect, 8000);
+                showDebug('REDIRECT SKIPPED (debug mode). Target: ' + targetUrl);
                 return;
             }
             console.log('[app v3] Promises resolved, redirecting');
