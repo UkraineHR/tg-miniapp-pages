@@ -18,13 +18,34 @@
     if (tg) {
         try { tg.ready(); } catch (e) {}
         try { tg.expand(); } catch (e) {}
-        // Bot API 8.0+: полноэкранный режим (ПК и мобильные).
-        // Если клиент не поддерживает — вызов молча проигнорируется.
+
+        // Слушаем события fullscreen для диагностики
         try {
-            if (typeof tg.requestFullscreen === 'function') {
-                tg.requestFullscreen();
+            tg.onEvent && tg.onEvent('fullscreenFailed', function (data) {
+                console.warn('[FS] failed:', JSON.stringify(data));
+            });
+            tg.onEvent && tg.onEvent('fullscreenChanged', function () {
+                console.log('[FS] changed: isFullscreen=', tg.isFullscreen);
+            });
+        } catch (e) {
+            console.warn('[FS] onEvent error:', e);
+        }
+
+        // Bot API 8.0+: полноэкранный режим.
+        // Вызываем через setTimeout, чтобы Telegram успел полностью инициализировать
+        // WebApp state и принял запрос — без этого на некоторых клиентах игнорится.
+        setTimeout(function () {
+            try {
+                if (typeof tg.requestFullscreen === 'function') {
+                    console.log('[FS] requesting, version=', tg.version);
+                    tg.requestFullscreen();
+                } else {
+                    console.warn('[FS] requestFullscreen not available (old client)');
+                }
+            } catch (e) {
+                console.error('[FS] call error:', e);
             }
-        } catch (e) {}
+        }, 100);
     }
 
     // ---- 2. Построение целевого URL ----
